@@ -219,11 +219,7 @@ StaticSingleThreadedExecutor::execute_ready_executables(
   for (size_t i = 0; i < wait_set_.size_of_subscriptions; ++i) {
     if (i < exec_list.number_of_subscriptions) {
       if (wait_set_.subscriptions[i]) {
-        if (exec_list.subscription[i]->get_intra_process_subscription_handle()) {
-          execute_intra_process_subscription(exec_list.subscription[i]);
-        } else {
-          execute_subscription(exec_list.subscription[i]);
-        }
+        execute_subscription(exec_list.subscription[i]);
       }
     }
   }
@@ -257,12 +253,21 @@ StaticSingleThreadedExecutor::execute_ready_executables(
       exec_list.waitable[i]->execute();
     }
   }
-  // Check the guard_conditions to see if anything is added to the executor
+  // Check the guard_conditions to see if a new entity was added to a node
   for (size_t i = 0; i < wait_set_.size_of_guard_conditions; ++i) {
     if (wait_set_.guard_conditions[i]) {
-      // rebuild the wait_set and ExecutableList struct
-      run_collect_entities();
-      get_executable_list(exec_list);
+      // Check if the guard condition triggered belongs to a node
+      auto it = std::find(
+        guard_conditions_.begin(),
+        guard_conditions_.end(),
+        wait_set_.guard_conditions[i]);
+
+      // If it does, re-collect entities
+      if (it != guard_conditions_.end()) {
+        run_collect_entities();
+        get_executable_list(exec_list);
+        break;
+      }
     }
   }
 }
