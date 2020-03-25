@@ -10,6 +10,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <string>
+
 #include "rclcpp/executors/static_single_threaded_executor.hpp"
 #include "rclcpp/scope_exit.hpp"
 
@@ -55,8 +57,9 @@ StaticSingleThreadedExecutor::get_timer_list(ExecutableList & exec_list)
       if (!group || !group->can_be_taken_from().load()) {
         continue;
       }
-      group->find_timer_ptrs_if([&exec_list](const rclcpp::TimerBase::SharedPtr & timer) {
-          if(timer){
+      group->find_timer_ptrs_if(
+        [&exec_list](const rclcpp::TimerBase::SharedPtr & timer) {
+          if (timer) {
             // If any timer is found, push it in the exec_list struct
             exec_list.timer.push_back(timer);
             exec_list.number_of_timers++;
@@ -84,9 +87,9 @@ StaticSingleThreadedExecutor::get_subscription_list(ExecutableList & exec_list)
       if (!group || !group->can_be_taken_from().load()) {
         continue;
       }
-      group->find_subscription_ptrs_if([&exec_list](
-        const rclcpp::SubscriptionBase::SharedPtr & subscription) {
-          if(subscription){
+      group->find_subscription_ptrs_if(
+        [&exec_list](const rclcpp::SubscriptionBase::SharedPtr & subscription) {
+          if (subscription) {
             // If any subscription (intra-process as well) is found, push it in the exec_list struct
             exec_list.subscription.push_back(subscription);
             exec_list.number_of_subscriptions++;
@@ -114,8 +117,9 @@ StaticSingleThreadedExecutor::get_service_list(ExecutableList & exec_list)
       if (!group || !group->can_be_taken_from().load()) {
         continue;
       }
-      group->find_service_ptrs_if([&exec_list](const rclcpp::ServiceBase::SharedPtr & service) {
-          if(service){
+      group->find_service_ptrs_if(
+        [&exec_list](const rclcpp::ServiceBase::SharedPtr & service) {
+          if (service) {
             // If any service is found, push it in the exec_list struct
             exec_list.service.push_back(service);
             exec_list.number_of_services++;
@@ -143,8 +147,9 @@ StaticSingleThreadedExecutor::get_client_list(ExecutableList & exec_list)
       if (!group || !group->can_be_taken_from().load()) {
         continue;
       }
-      group->find_client_ptrs_if([&exec_list](const rclcpp::ClientBase::SharedPtr & client) {
-          if(client){
+      group->find_client_ptrs_if(
+        [&exec_list](const rclcpp::ClientBase::SharedPtr & client) {
+          if (client) {
             // If any client is found, push it in the exec_list struct
             exec_list.client.push_back(client);
             exec_list.number_of_clients++;
@@ -172,13 +177,14 @@ StaticSingleThreadedExecutor::get_waitable_list(ExecutableList & exec_list)
       if (!group || !group->can_be_taken_from().load()) {
         continue;
       }
-      group->find_waitable_ptrs_if([&exec_list](const rclcpp::Waitable::SharedPtr & waitable) {
-          if(waitable){
+      group->find_waitable_ptrs_if(
+        [&exec_list](const rclcpp::Waitable::SharedPtr & waitable) {
+          if (waitable) {
             // If any waitable is found, push it in the exec_list struct
             exec_list.waitable.push_back(waitable);
             exec_list.number_of_waitables++;
           }
-            return false;
+          return false;
         });
     }
   }
@@ -227,7 +233,7 @@ StaticSingleThreadedExecutor::execute_ready_executables(
   for (size_t i = 0; i < wait_set_.size_of_timers; ++i) {
     if (i < exec_list.number_of_timers) {
       if (wait_set_.timers[i] && exec_list.timer[i]->is_ready()) {
-          execute_timer(exec_list.timer[i]);
+        execute_timer(exec_list.timer[i]);
       }
     }
   }
@@ -235,7 +241,7 @@ StaticSingleThreadedExecutor::execute_ready_executables(
   for (size_t i = 0; i < wait_set_.size_of_services; ++i) {
     if (i < exec_list.number_of_services) {
       if (wait_set_.services[i]) {
-          execute_service(exec_list.service[i]);
+        execute_service(exec_list.service[i]);
       }
     }
   }
@@ -243,7 +249,7 @@ StaticSingleThreadedExecutor::execute_ready_executables(
   for (size_t i = 0; i < wait_set_.size_of_clients; ++i) {
     if (i < exec_list.number_of_clients) {
       if (wait_set_.clients[i]) {
-          execute_client(exec_list.client[i]);
+        execute_client(exec_list.client[i]);
       }
     }
   }

@@ -198,7 +198,6 @@ protected:
   RCLCPP_PUBLIC
   void prepare_wait_set();
 
-
 private:
   RCLCPP_DISABLE_COPY(StaticSingleThreadedExecutor)
 };
